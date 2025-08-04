@@ -42,6 +42,12 @@ COLOR_PALETTE = [
     (72, 61, 139)     
 ]
 
+SKIN_PALETTE = [
+    (255, 224, 189), (241, 194, 125), (224, 172, 105), (198, 134, 66),
+    (141, 85, 36), (107, 61, 36), (255, 219, 172), (255, 205, 148)
+]
+
+
 def adjust_style_coordinates(model, offset_x=CHARACTER_OFFSET_X, offset_y=CHARACTER_OFFSET_Y):
     adjusted_model = []
     for polygon, color in model:
@@ -61,27 +67,50 @@ def draw_button(text, x, y, w, h, color=(200, 200, 200)):
     screen.blit(txt, txt_rect)
     return pygame.Rect(x, y, w, h)
 
-def draw_color_palette(x, y, selected_color=None):
+def draw_color_palette(x, y, selected_color=None, palette=None):
     color_rects = []
     cols = 4
     color_size = 30
     spacing = 5
-    
-    for i, color in enumerate(COLOR_PALETTE):
+    colors = palette if palette else COLOR_PALETTE
+    for i, color in enumerate(colors):
         row = i // cols
         col = i % cols
         rect_x = x + col * (color_size + spacing)
         rect_y = y + row * (color_size + spacing)
-        
         rect = pygame.Rect(rect_x, rect_y, color_size, color_size)
         pygame.draw.rect(screen, color, rect)
-        
         border_width = 3 if color == selected_color else 1
         pygame.draw.rect(screen, BLACK, rect, border_width)
-        
         color_rects.append((rect, color))
-    
     return color_rects
+
+
+def select_skin_color():
+    selected_color = SKIN_PALETTE[0]
+    running = True
+    clock = pygame.time.Clock()
+    while running:
+        screen.fill(WHITE)
+        txt = font.render("Choose Skin Color", True, BLACK)
+        screen.blit(txt, (150, 30))
+        color_rects = draw_color_palette(50, 80, selected_color, SKIN_PALETTE)
+        pygame.draw.rect(screen, selected_color, (200, 200, 100, 100))
+        txt2 = font.render("Select", True, BLACK)
+        screen.blit(txt2, (225, 310))
+        pygame.display.update()
+        clock.tick(30)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit(); exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = pygame.mouse.get_pos()
+                for rect, color in color_rects:
+                    if rect.collidepoint(mx, my):
+                        selected_color = color
+                if 200 <= mx <= 300 and 200 <= my <= 300:
+                    running = False
+    return selected_color
 
 def load_models(gender, category):
     path = os.path.join("model", "style", gender, f"{category}.txt")
@@ -148,7 +177,7 @@ def select_base_body():
                     gender = "female" if body_classes[current_index] == FemaleBody else "male"
                     return body_classes[current_index], gender
 
-def select_model_with_preview(BodyClass, gender, models, title, current_selections):
+def select_model_with_preview(BodyFactory, gender, models, title, current_selections):
     current_index = 0
     selected_color = COLOR_PALETTE[0]
     clock = pygame.time.Clock()
@@ -157,7 +186,7 @@ def select_model_with_preview(BodyClass, gender, models, title, current_selectio
         screen.fill(WHITE)
 
         character_surface = pygame.Surface((CHARACTER_DISPLAY_WIDTH, CHARACTER_DISPLAY_HEIGHT), pygame.SRCALPHA)
-        character = BodyClass(character_surface)
+        character = BodyFactory(character_surface)
         character.draw()
         screen.blit(character_surface, (CHARACTER_OFFSET_X, CHARACTER_OFFSET_Y))
         
@@ -238,12 +267,12 @@ def select_model_with_preview(BodyClass, gender, models, title, current_selectio
                 elif skip_btn and skip_btn.collidepoint(mx, my):
                     return None
 
-def show_final_character(BodyClass, selections):
+def show_final_character(BodyFactory, selections):
     win = pygame.display.set_mode((500, 500))
     surface = pygame.Surface((500, 500))
     pygame.display.set_caption("Your Final Character")
 
-    character = BodyClass(surface)
+    character = BodyFactory(surface)
     clock = pygame.time.Clock()
 
     while True:
@@ -270,28 +299,31 @@ def show_final_character(BodyClass, selections):
 
 def main():
     base_class, gender = select_base_body()
-    
+    skin_color = select_skin_color()  
     selections = {}
-    
+
+    def body_factory(surface):
+        return base_class(surface, skin_color=skin_color)
+
     hair_models = load_models(gender, "hair")
     if hair_models:
-        selected_hair = select_model_with_preview(base_class, gender, hair_models, "Hair", selections)
+        selected_hair = select_model_with_preview(body_factory, gender, hair_models, "Hair", selections)
         if selected_hair:
             selections['hair'] = selected_hair
-    
+
     shirt_models = load_models(gender, "shirt")
     if shirt_models:
-        selected_shirt = select_model_with_preview(base_class, gender, shirt_models, "Shirt", selections)
+        selected_shirt = select_model_with_preview(body_factory, gender, shirt_models, "Shirt", selections)
         if selected_shirt:
             selections['shirt'] = selected_shirt
-    
+
     pants_models = load_models(gender, "pants")
     if pants_models:
-        selected_pants = select_model_with_preview(base_class, gender, pants_models, "Pants", selections)
+        selected_pants = select_model_with_preview(body_factory, gender, pants_models, "Pants", selections)
         if selected_pants:
             selections['pants'] = selected_pants
-    
-    show_final_character(base_class, selections)
+
+    show_final_character(body_factory, selections)
 
 if __name__ == "__main__":
     main()
