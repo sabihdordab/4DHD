@@ -25,26 +25,26 @@ font = pygame.font.SysFont(None, 24)
 
 COLOR_PALETTE = [
     (255, 0, 0),
-    (139, 69, 19),   
-    (255, 215, 0),          
-    (0, 255, 0),     
-    (0, 0, 255),     
-    (255, 192, 203),  
-    (128, 0, 128),   
-    (255, 165, 0),    
-    (0, 255, 255),    
-    (255, 255, 0),    
+    (0, 0, 255),
+    (0, 0, 0), 
+    (0, 255, 0),
+    (255, 192, 203),
+    (255, 255, 0), 
+    (0, 255, 255),
+    (119, 190, 240), 
+    (75, 53, 42),                     
+    (255, 45, 209),   
+    (255, 128, 64),           
     (128, 128, 128),  
-    (0, 0, 0),        
     (255, 255, 255), 
-    (165, 42, 42),    
-    (34, 139, 34),    
+    (185, 55, 93),    
+    (0, 70, 255),  
     (72, 61, 139)     
 ]
 
 SKIN_PALETTE = [
-    (255, 224, 189), (241, 194, 125), (224, 172, 105), (198, 134, 66),
-    (141, 85, 36), (107, 61, 36), (255, 219, 172), (255, 205, 148)
+    (255, 224, 189), (255, 220, 220),(255, 214, 186), (0, 0, 0),
+    (255, 255, 255),(171, 136, 109),(245, 238, 230),(243, 215, 202)
 ]
 
 
@@ -96,6 +96,7 @@ def select_skin_color():
         screen.blit(txt, (150, 30))
         color_rects = draw_color_palette(50, 80, selected_color, SKIN_PALETTE)
         pygame.draw.rect(screen, selected_color, (200, 200, 100, 100))
+        pygame.draw.rect(screen, BLACK, (200, 200, 100, 100),2)
         txt2 = font.render("Select", True, BLACK)
         screen.blit(txt2, (225, 310))
         pygame.display.update()
@@ -125,8 +126,10 @@ def draw_polygons_with_color(surface, model, color_override=None):
         if i==0:
           color = color_override if color_override else original_color
           pygame.draw.polygon(surface, color, poly)
+          pygame.draw.polygon(surface, BLACK, poly,2)
         else:
              pygame.draw.polygon(surface, original_color, poly)
+             pygame.draw.polygon(surface, BLACK, poly,2)
         i+=1            
 
 
