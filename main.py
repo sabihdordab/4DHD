@@ -59,7 +59,7 @@ def adjust_style_coordinates(model, offset_x=CHARACTER_OFFSET_X, offset_y=CHARAC
         adjusted_model.append((adjusted_polygon, color))
     return adjusted_model
 
-def draw_button(text, x, y, w, h, color=(200, 200, 200)):
+def draw_button(text, x, y, w, h, color=(0, 255, 0)):
     pygame.draw.rect(screen, color, (x, y, w, h))
     pygame.draw.rect(screen, BLACK, (x, y, w, h), 2)
     txt = font.render(text, True, BLACK)
@@ -150,7 +150,7 @@ def select_base_body():
         if current_index < len(body_classes) - 1:
             draw_button("Next ->", WIDTH - 150, HEIGHT - 60, BUTTON_WIDTH, BUTTON_HEIGHT)
 
-        draw_button("Select", WIDTH//2 - 50, HEIGHT - 60, BUTTON_WIDTH, BUTTON_HEIGHT)
+        draw_button("Select", WIDTH//2 - 50, HEIGHT - 60, BUTTON_WIDTH, BUTTON_HEIGHT,color=(255, 0, 0))
 
         gender_text = "Female" if body_classes[current_index] == FemaleBody else "Male"
         txt = font.render(f"Body Type: {gender_text}", True, BLACK)
@@ -234,8 +234,8 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
         if current_index < len(models) - 1:
             next_btn = draw_button("Next Style ->", 580, HEIGHT - 120, 120, BUTTON_HEIGHT)
         
-        select_btn = draw_button("Select", 450, HEIGHT - 70, BUTTON_WIDTH, BUTTON_HEIGHT)
-        skip_btn = draw_button("Skip", 560, 11, BUTTON_WIDTH, BUTTON_HEIGHT)
+        select_btn = draw_button("Select", 450, HEIGHT - 70, BUTTON_WIDTH, BUTTON_HEIGHT,color=(255, 0, 0))
+        skip_btn = draw_button("Skip", 560, 11, BUTTON_WIDTH, BUTTON_HEIGHT,color=(200,200,200))
 
         pygame.display.update()
         clock.tick(30)
