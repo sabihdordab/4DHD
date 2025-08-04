@@ -24,9 +24,9 @@ pygame.display.set_caption("Choose Character")
 font = pygame.font.SysFont(None, 24)
 
 COLOR_PALETTE = [
+    (0, 0, 0),
     (255, 0, 0),
-    (0, 0, 255),
-    (0, 0, 0), 
+    (0, 0, 255), 
     (0, 255, 0),
     (255, 192, 203),
     (255, 255, 0), 
@@ -121,17 +121,11 @@ def load_models(gender, category):
         return ast.literal_eval(f.read())
 
 def draw_polygons_with_color(surface, model, color_override=None):
-    i = 0
     for poly, original_color in model:
-        if i==0:
-          color = color_override if color_override else original_color
+          color = original_color if original_color else color_override
           pygame.draw.polygon(surface, color, poly)
           pygame.draw.polygon(surface, BLACK, poly,2)
-        else:
-             pygame.draw.polygon(surface, original_color, poly)
-             pygame.draw.polygon(surface, BLACK, poly,2)
-        i+=1            
-
+          
 
 def select_base_body():
     body_classes = [FemaleBody, MaleBody] 
@@ -192,14 +186,18 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
         character = BodyFactory(character_surface)
         character.draw()
         screen.blit(character_surface, (CHARACTER_OFFSET_X, CHARACTER_OFFSET_Y))
-        
-        if current_selections.get('hair'):
-            adjusted_hair = adjust_style_coordinates(current_selections['hair']['original_model'])
-            draw_polygons_with_color(screen, adjusted_hair, current_selections['hair']['color'])
-        
+
         if current_selections.get('shirt'):
             adjusted_shirt = adjust_style_coordinates(current_selections['shirt']['original_model'])
             draw_polygons_with_color(screen, adjusted_shirt, current_selections['shirt']['color'])
+
+        if current_selections.get('hair'):
+            adjusted_hair = adjust_style_coordinates(current_selections['hair']['original_model'])
+            draw_polygons_with_color(screen, adjusted_hair, current_selections['hair']['color'])
+
+        if current_selections.get('eye'):
+            adjusted_hair = adjust_style_coordinates(current_selections['eye']['original_model'])
+            draw_polygons_with_color(screen, adjusted_hair, current_selections['eye']['color'])
         
         if current_selections.get('pants'):
             adjusted_pants = adjust_style_coordinates(current_selections['pants']['original_model'])
@@ -281,13 +279,16 @@ def show_final_character(BodyFactory, selections):
     while True:
         surface.fill(WHITE)
         character.draw()
-        
-        if selections.get('hair'):
-            draw_polygons_with_color(surface, selections['hair']['original_model'], 
-                                   selections['hair']['color'])
+
         if selections.get('shirt'):
             draw_polygons_with_color(surface, selections['shirt']['original_model'], 
                                    selections['shirt']['color'])
+        if selections.get('hair'):
+            draw_polygons_with_color(surface, selections['hair']['original_model'], 
+                                   selections['hair']['color'])
+        if selections.get('eye'):
+            draw_polygons_with_color(surface, selections['eye']['original_model'], 
+                                   selections['eye']['color'])
         if selections.get('pants'):
             draw_polygons_with_color(surface, selections['pants']['original_model'], 
                                    selections['pants']['color'])
@@ -307,6 +308,12 @@ def main():
 
     def body_factory(surface):
         return base_class(surface, skin_color=skin_color)
+    
+    shirt_models = load_models(gender, "shirt")
+    if shirt_models:
+        selected_shirt = select_model_with_preview(body_factory, gender, shirt_models, "Shirt", selections)
+        if selected_shirt:
+            selections['shirt'] = selected_shirt
 
     hair_models = load_models(gender, "hair")
     if hair_models:
@@ -314,11 +321,12 @@ def main():
         if selected_hair:
             selections['hair'] = selected_hair
 
-    shirt_models = load_models(gender, "shirt")
-    if shirt_models:
-        selected_shirt = select_model_with_preview(body_factory, gender, shirt_models, "Shirt", selections)
-        if selected_shirt:
-            selections['shirt'] = selected_shirt
+    eye_models = load_models(gender, "eye")
+    if eye_models:
+        selected_eye = select_model_with_preview(body_factory, gender, eye_models, "Eye", selections)
+        if selected_eye:
+            selections['eye'] = selected_eye
+
 
     pants_models = load_models(gender, "pants")
     if pants_models:
