@@ -273,7 +273,7 @@ def select_base_body():
         if current_index < len(body_classes) - 1:
             draw_button("Next ->", WIDTH - 150, HEIGHT - 60, BUTTON_WIDTH, BUTTON_HEIGHT)
 
-        draw_button("Select", WIDTH//2 - 50, HEIGHT - 60, BUTTON_WIDTH, BUTTON_HEIGHT,color=(255, 0, 0))
+        draw_button("Select", WIDTH//2 - 50, HEIGHT - 60, BUTTON_WIDTH, BUTTON_HEIGHT,color=(255, 255, 0))
 
         gender_text = "Female" if body_classes[current_index] == FemaleBody else "Male"
         txt = font.render(f"Body Type: {gender_text}", True, BLACK)
@@ -355,8 +355,8 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
         if current_index < len(models) - 1:
             next_btn = draw_button("Next Style ->", 580, HEIGHT - 120, 120, BUTTON_HEIGHT)
         
-        select_btn = draw_button("Select", 450, HEIGHT - 70, BUTTON_WIDTH, BUTTON_HEIGHT,color=(255, 0, 0))
-        skip_btn = draw_button("Reset", 565, 11, BUTTON_WIDTH, BUTTON_HEIGHT,color=(200,200,200))
+        select_btn = draw_button("Select", 450, HEIGHT - 70, BUTTON_WIDTH, BUTTON_HEIGHT,color=(255, 255, 0))
+        skip_btn = draw_button("Reset", 565, 11, BUTTON_WIDTH, BUTTON_HEIGHT,color=(255,0,0))
 
         pygame.display.update()
         clock.tick(30)
