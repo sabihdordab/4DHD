@@ -356,7 +356,7 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
             next_btn = draw_button("Next Style ->", 580, HEIGHT - 120, 120, BUTTON_HEIGHT)
         
         select_btn = draw_button("Select", 450, HEIGHT - 70, BUTTON_WIDTH, BUTTON_HEIGHT,color=(255, 0, 0))
-        skip_btn = draw_button("Skip", 565, 11, BUTTON_WIDTH, BUTTON_HEIGHT,color=(200,200,200))
+        skip_btn = draw_button("Reset", 565, 11, BUTTON_WIDTH, BUTTON_HEIGHT,color=(200,200,200))
 
         pygame.display.update()
         clock.tick(30)
@@ -389,8 +389,7 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
                     return None
                 
                 elif skip_btn and skip_btn.collidepoint(mx, my):
-                    return None
-
+                    raise ResetException
 def show_final_character(BodyFactory, selections, background_color):
     win = pygame.display.set_mode((500, 500))
     surface = pygame.Surface((500, 500))
@@ -424,43 +423,53 @@ def show_final_character(BodyFactory, selections, background_color):
             if event.type == pygame.QUIT:
                 pygame.quit(); sys.exit()
 
+class ResetException(Exception):
+    pass
+
 def main():
-    base_class, gender = select_base_body()
-    skin_color = select_skin_color()  
-    selections = {}
+    while True: 
+        try:
+            base_class, gender = select_base_body()
+            skin_color = select_skin_color()  
+            selections = {}
 
-    def body_factory(surface):
-        return base_class(surface, skin_color=skin_color)
-    
-    shirt_models = load_models(gender, "shirt")
-    if shirt_models:
-        selected_shirt = select_model_with_preview(body_factory, gender, shirt_models, "Shirt", selections)
-        if selected_shirt:
-            selections['shirt'] = selected_shirt
+            def body_factory(surface):
+                return base_class(surface, skin_color=skin_color)
+            
+            shirt_models = load_models(gender, "shirt")
+            if shirt_models:
+                selected_shirt = select_model_with_preview(body_factory, gender, shirt_models, "Shirt", selections)
+                if selected_shirt:
+                    selections['shirt'] = selected_shirt
 
-    hair_models = load_models(gender, "hair")
-    if hair_models:
-        selected_hair = select_model_with_preview(body_factory, gender, hair_models, "Hair", selections)
-        if selected_hair:
-            selections['hair'] = selected_hair
+            hair_models = load_models(gender, "hair")
+            if hair_models:
+                selected_hair = select_model_with_preview(body_factory, gender, hair_models, "Hair", selections)
+                if selected_hair:
+                    selections['hair'] = selected_hair
 
+            pants_models = load_models(gender, "pants")
+            if pants_models:
+                selected_pants = select_model_with_preview(body_factory, gender, pants_models, "Pants", selections)
+                if selected_pants:
+                    selections['pants'] = selected_pants
 
-    pants_models = load_models(gender, "pants")
-    if pants_models:
-        selected_pants = select_model_with_preview(body_factory, gender, pants_models, "Pants", selections)
-        if selected_pants:
-            selections['pants'] = selected_pants
+            eye_models = load_models(gender, "eye")
+            if eye_models:
+                selected_eye = select_model_with_preview(body_factory, gender, eye_models, "Eye", selections)
+                if selected_eye:
+                    selections['eye'] = selected_eye
 
-    eye_models = load_models(gender, "eye")
-    if eye_models:
-        selected_eye = select_model_with_preview(body_factory, gender, eye_models, "Eye", selections)
-        if selected_eye:
-            selections['eye'] = selected_eye
+            background_color = select_background_color(body_factory, selections)
+            
+            show_final_character(body_factory, selections, background_color)
+            break
+            
+        except ResetException:
+            screen = pygame.display.set_mode((WIDTH, HEIGHT))
+            pygame.display.set_caption("Choose Character")
+            continue
 
-
-    background_color = select_background_color(body_factory, selections)
-    
-    show_final_character(body_factory, selections, background_color)
 
 if __name__ == "__main__":
     main()
