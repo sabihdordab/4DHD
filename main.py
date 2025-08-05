@@ -21,7 +21,7 @@ ORIGINAL_DESIGN_SIZE = 500
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Choose Character")
 
-font = pygame.font.SysFont(None, 24)
+font = pygame.font.Font("assets/game.ttf", 15)
 
 COLOR_PALETTE = [
     (0, 0, 0),
@@ -242,7 +242,7 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
             next_btn = draw_button("Next Style ->", 580, HEIGHT - 120, 120, BUTTON_HEIGHT)
         
         select_btn = draw_button("Select", 450, HEIGHT - 70, BUTTON_WIDTH, BUTTON_HEIGHT,color=(255, 0, 0))
-        skip_btn = draw_button("Skip", 560, 11, BUTTON_WIDTH, BUTTON_HEIGHT,color=(200,200,200))
+        skip_btn = draw_button("Skip", 565, 11, BUTTON_WIDTH, BUTTON_HEIGHT,color=(200,200,200))
 
         pygame.display.update()
         clock.tick(30)
