@@ -34,7 +34,6 @@ COLOR_PALETTE = [
     (119, 190, 240), 
     (75, 53, 42),                     
     (255, 45, 209),   
-    (255, 128, 64),           
     (128, 128, 128),  
     (255, 255, 255), 
     (72, 61, 139),
@@ -49,6 +48,17 @@ COLOR_PALETTE = [
     (127, 255, 212),
     (139, 69, 19),    
     (119, 136, 153),
+    (192, 192, 192),  
+    (255, 140, 0),    
+    (0, 206, 209),    
+    (50, 50, 50),
+    (255, 0, 255),
+    (0, 255, 127),   
+    (50, 205, 50),
+    (255, 71, 87),    
+    (72, 219, 251),   
+    (29, 38, 125),    
+    (128, 0, 128),    
 ]
 
 SKIN_PALETTE = [
@@ -56,6 +66,51 @@ SKIN_PALETTE = [
     (0, 0, 0),(171, 136, 109),(245, 238, 230),(243, 215, 202)
 ]
 
+BACKGROUND_PALETTE = [
+    (255, 255, 255),  
+    (240, 248, 255),  # Alice Blue
+    (245, 245, 220),  # Beige
+    (0, 0, 0),       
+    (25, 25, 112),    # Midnight Blue
+    (123, 104, 238),  # Medium Slate Blue
+    (255, 192, 203),  # Pink
+    (255, 182, 193),  # Light Pink
+    (255, 160, 122),  # Light Salmon
+    (152, 251, 152),  # Pale Green
+    (173, 216, 230),  # Light Blue
+    (135, 206, 235),  # Sky Blue
+    (255, 255, 224),  # Light Yellow
+    (255, 239, 213),  # Papaya Whip
+    (221, 160, 221),  # Plum
+    (216, 191, 216),  # Thistle
+    (211, 211, 211),  # Light Gray
+    (169, 169, 169),  # Dark Gray
+    (255, 0, 0),
+    (0, 0, 255), 
+    (0, 255, 0),
+    (255, 255, 0), 
+    (0, 255, 255),
+    (119, 190, 240), 
+    (75, 53, 42),                     
+    (255, 45, 209),   
+    (128, 128, 128),  
+    (72, 61, 139),
+    (255, 20, 147),    
+    (138, 43, 226),    
+    (255, 215, 0),    
+    (255, 69, 0),      
+    (255, 105, 180),   
+    (0, 250, 154),     
+    (75, 0, 130),      
+    (0, 191, 255),     
+    (127, 255, 212),
+    (119, 136, 153),
+    (192, 192, 192),  
+    (255, 140, 0),    
+    (0, 206, 209),    
+    (50, 50, 50),
+    (255, 0, 255),
+]
 
 def adjust_style_coordinates(model, offset_x=CHARACTER_OFFSET_X, offset_y=CHARACTER_OFFSET_Y):
     adjusted_model = []
@@ -94,7 +149,6 @@ def draw_color_palette(x, y, selected_color=None, palette=None):
         color_rects.append((rect, color))
     return color_rects
 
-
 def select_skin_color():
     selected_color = SKIN_PALETTE[0]
     running = True
@@ -122,19 +176,85 @@ def select_skin_color():
                     running = False
     return selected_color
 
+def draw_polygons_with_color(surface, model, color_override=None):
+    for poly, original_color in model:
+          color = original_color if original_color else color_override
+          pygame.draw.polygon(surface, color, poly)
+          pygame.draw.polygon(surface, BLACK, poly,2)
+
+def draw_character_preview(surface, body_factory, selections, x_offset=0, y_offset=0):
+    character = body_factory(surface)
+    character.draw()
+
+    if selections.get('shirt'):
+        adjusted_shirt = adjust_style_coordinates(selections['shirt']['original_model'], 
+                                                x_offset, y_offset)
+        draw_polygons_with_color(surface, adjusted_shirt, selections['shirt']['color'])
+
+    if selections.get('hair'):
+        adjusted_hair = adjust_style_coordinates(selections['hair']['original_model'], 
+                                               x_offset, y_offset)
+        draw_polygons_with_color(surface, adjusted_hair, selections['hair']['color'])
+
+    if selections.get('eye'):
+        adjusted_eye = adjust_style_coordinates(selections['eye']['original_model'], 
+                                              x_offset, y_offset)
+        draw_polygons_with_color(surface, adjusted_eye, selections['eye']['color'])
+    
+    if selections.get('pants'):
+        adjusted_pants = adjust_style_coordinates(selections['pants']['original_model'], 
+                                                x_offset, y_offset)
+        draw_polygons_with_color(surface, adjusted_pants, selections['pants']['color'])
+
+def select_background_color(body_factory, selections):
+    selected_color = BACKGROUND_PALETTE[0]  
+    running = True
+    clock = pygame.time.Clock()
+    
+    while running:
+        screen.fill(selected_color)
+        
+        character_surface = pygame.Surface((CHARACTER_DISPLAY_WIDTH, CHARACTER_DISPLAY_HEIGHT), 
+                                         pygame.SRCALPHA)
+        draw_character_preview(character_surface, body_factory, selections)
+        screen.blit(character_surface, (50, 50))
+        
+        title_color = WHITE if sum(selected_color) < 400 else BLACK
+        title_text = font.render("Choose Background Color", True, title_color)
+        screen.blit(title_text, (500, 30))
+        
+        color_rects = draw_color_palette(450, 50, selected_color, BACKGROUND_PALETTE)
+        
+        
+        select_btn_color = (0, 255, 0) if sum(selected_color) > 400 else (0, 200, 0)
+        select_btn = draw_button("Select Background", 500, 450, 150, 40, select_btn_color)
+        
+        pygame.display.update()
+        clock.tick(30)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = pygame.mouse.get_pos()
+                
+                for rect, color in color_rects:
+                    if rect.collidepoint(mx, my):
+                        selected_color = color
+                        break
+                
+                if select_btn.collidepoint(mx, my):
+                    running = False
+    
+    return selected_color
+
 def load_models(gender, category):
     path = os.path.join("model", "style", gender, f"{category}.txt")
     if not os.path.exists(path):
         return []
     with open(path, 'r') as f:
         return ast.literal_eval(f.read())
-
-def draw_polygons_with_color(surface, model, color_override=None):
-    for poly, original_color in model:
-          color = original_color if original_color else color_override
-          pygame.draw.polygon(surface, color, poly)
-          pygame.draw.polygon(surface, BLACK, poly,2)
-          
 
 def select_base_body():
     body_classes = [FemaleBody, MaleBody] 
@@ -216,20 +336,14 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
             adjusted_current = adjust_style_coordinates(models[current_index])
             draw_polygons_with_color(screen, adjusted_current, selected_color)
                 
-        color_rects = draw_color_palette(450, 100, selected_color)
+        color_rects = draw_color_palette(450, 55, selected_color)
         
         title_text = font.render(f"Choose {title}", True, BLACK)
         screen.blit(title_text, (450, 20))
         
-        # color_text = font.render(f"Selected Color: RGB{selected_color}", True, BLACK)
-        # screen.blit(color_text, (450, 320))
-        
-     #    coord_info = font.render(f"Style offset: ({CHARACTER_OFFSET_X}, {CHARACTER_OFFSET_Y})", True, BLACK)
-     #    screen.blit(coord_info, (450, 350))
-        
         if models:
             style_info = font.render(f"Style {current_index} of {len(models)-1}", True, BLACK)
-            screen.blit(style_info, (450, 380))
+            screen.blit(style_info, (450, 390))
         
         prev_btn = None
         next_btn = None
@@ -277,7 +391,7 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
                 elif skip_btn and skip_btn.collidepoint(mx, my):
                     return None
 
-def show_final_character(BodyFactory, selections):
+def show_final_character(BodyFactory, selections, background_color):
     win = pygame.display.set_mode((500, 500))
     surface = pygame.Surface((500, 500))
     pygame.display.set_caption("Your Final Character")
@@ -286,7 +400,7 @@ def show_final_character(BodyFactory, selections):
     clock = pygame.time.Clock()
 
     while True:
-        surface.fill(WHITE)
+        surface.fill(background_color)
         character.draw()
 
         if selections.get('shirt'):
@@ -336,14 +450,15 @@ def main():
         if selected_eye:
             selections['eye'] = selected_eye
 
-
     pants_models = load_models(gender, "pants")
     if pants_models:
         selected_pants = select_model_with_preview(body_factory, gender, pants_models, "Pants", selections)
         if selected_pants:
             selections['pants'] = selected_pants
 
-    show_final_character(body_factory, selections)
+    background_color = select_background_color(body_factory, selections)
+    
+    show_final_character(body_factory, selections, background_color)
 
 if __name__ == "__main__":
     main()
