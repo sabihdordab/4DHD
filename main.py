@@ -324,13 +324,13 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
             adjusted_hair = adjust_style_coordinates(current_selections['hair']['original_model'])
             draw_polygons_with_color(screen, adjusted_hair, current_selections['hair']['color'])
 
-        if current_selections.get('eye'):
-            adjusted_hair = adjust_style_coordinates(current_selections['eye']['original_model'])
-            draw_polygons_with_color(screen, adjusted_hair, current_selections['eye']['color'])
-        
         if current_selections.get('pants'):
             adjusted_pants = adjust_style_coordinates(current_selections['pants']['original_model'])
             draw_polygons_with_color(screen, adjusted_pants, current_selections['pants']['color'])
+
+        if current_selections.get('eye'):
+            adjusted_hair = adjust_style_coordinates(current_selections['eye']['original_model'])
+            draw_polygons_with_color(screen, adjusted_hair, current_selections['eye']['color'])
         
         if current_index < len(models):
             adjusted_current = adjust_style_coordinates(models[current_index])
@@ -444,17 +444,19 @@ def main():
         if selected_hair:
             selections['hair'] = selected_hair
 
-    eye_models = load_models(gender, "eye")
-    if eye_models:
-        selected_eye = select_model_with_preview(body_factory, gender, eye_models, "Eye", selections)
-        if selected_eye:
-            selections['eye'] = selected_eye
 
     pants_models = load_models(gender, "pants")
     if pants_models:
         selected_pants = select_model_with_preview(body_factory, gender, pants_models, "Pants", selections)
         if selected_pants:
             selections['pants'] = selected_pants
+
+    eye_models = load_models(gender, "eye")
+    if eye_models:
+        selected_eye = select_model_with_preview(body_factory, gender, eye_models, "Eye", selections)
+        if selected_eye:
+            selections['eye'] = selected_eye
+
 
     background_color = select_background_color(body_factory, selections)
     
