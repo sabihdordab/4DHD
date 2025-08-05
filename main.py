@@ -37,16 +37,23 @@ COLOR_PALETTE = [
     (255, 128, 64),           
     (128, 128, 128),  
     (255, 255, 255), 
-    (185, 55, 93),    
-    (0, 70, 255),
-    (185, 55, 93),    
-    (0, 70, 255),  
-    (72, 61, 139)     
+    (72, 61, 139),
+    (255, 20, 147),    
+    (138, 43, 226),    
+    (255, 215, 0),    
+    (255, 69, 0),      
+    (255, 105, 180),   
+    (0, 250, 154),     
+    (75, 0, 130),      
+    (0, 191, 255),     
+    (127, 255, 212),
+    (139, 69, 19),    
+    (119, 136, 153),
 ]
 
 SKIN_PALETTE = [
-    (255, 224, 189), (255, 220, 220),(255, 214, 186), (0, 0, 0),
-    (255, 255, 255),(171, 136, 109),(245, 238, 230),(243, 215, 202)
+    (255, 255, 255),(255, 224, 189), (255, 220, 220),(255, 214, 186), 
+    (0, 0, 0),(171, 136, 109),(245, 238, 230),(243, 215, 202)
 ]
 
 
@@ -214,14 +221,14 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
         title_text = font.render(f"Choose {title}", True, BLACK)
         screen.blit(title_text, (450, 20))
         
-        color_text = font.render(f"Selected Color: RGB{selected_color}", True, BLACK)
-        screen.blit(color_text, (450, 320))
+        # color_text = font.render(f"Selected Color: RGB{selected_color}", True, BLACK)
+        # screen.blit(color_text, (450, 320))
         
      #    coord_info = font.render(f"Style offset: ({CHARACTER_OFFSET_X}, {CHARACTER_OFFSET_Y})", True, BLACK)
      #    screen.blit(coord_info, (450, 350))
         
         if models:
-            style_info = font.render(f"Style {current_index + 1} of {len(models)}", True, BLACK)
+            style_info = font.render(f"Style {current_index} of {len(models)-1}", True, BLACK)
             screen.blit(style_info, (450, 380))
         
         prev_btn = None
