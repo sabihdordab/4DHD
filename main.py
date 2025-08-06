@@ -2,7 +2,7 @@ import pygame
 import sys
 import os
 import ast
-from model.character import FemaleBody, MaleBody
+from model.character import FemaleBody, MaleBody , MonsterBody
 
 pygame.init()
 
@@ -257,7 +257,8 @@ def load_models(gender, category):
         return ast.literal_eval(f.read())
 
 def select_base_body():
-    body_classes = [FemaleBody, MaleBody] 
+    body_classes = [FemaleBody, MaleBody, MonsterBody]  
+    body_names = ["Female", "Male", "Monster"]  
     current_index = 0
     clock = pygame.time.Clock()
 
@@ -275,8 +276,7 @@ def select_base_body():
 
         draw_button("Select", WIDTH//2 - 50, HEIGHT - 60, BUTTON_WIDTH, BUTTON_HEIGHT,color=(255, 255, 0))
 
-        gender_text = "Female" if body_classes[current_index] == FemaleBody else "Male"
-        txt = font.render(f"Body Type: {gender_text}", True, BLACK)
+        txt = font.render(f"Body Type: {body_names[current_index]}", True, BLACK)
         screen.blit(txt, (450, 20))
         
         pos_text = font.render(f"Character Position: ({CHARACTER_OFFSET_X}, {CHARACTER_OFFSET_Y})", True, BLACK)
@@ -300,7 +300,10 @@ def select_base_body():
                         current_index += 1
 
                 elif WIDTH//2 - 50 <= mx <= WIDTH//2 + 50 and HEIGHT - 60 <= my <= HEIGHT - 20:
-                    gender = "female" if body_classes[current_index] == FemaleBody else "male"
+                    if body_classes[current_index] == MonsterBody:
+                        gender = "monster"
+                    else:
+                        gender = "female" if body_classes[current_index] == FemaleBody else "male"
                     return body_classes[current_index], gender
 
 def select_model_with_preview(BodyFactory, gender, models, title, current_selections):

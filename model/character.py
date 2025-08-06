@@ -150,3 +150,68 @@ class MaleBody(LayeredBody):
 class FemaleBody(LayeredBody):
     def draw_hair(self, surface):
         pass
+
+class MonsterBody(LayeredBody):
+    def create_layers(self):
+        self.layers.append(Layer("legs_lower", self.draw_legs_lower))
+        self.layers.append(Layer("legs_upper", self.draw_legs_upper))
+        self.layers.append(Layer("ass_arc", self.draw_ass))
+        self.layers.append(Layer("stomach", self.draw_stomach))
+        self.layers.append(Layer("chest", self.draw_chest))
+        self.layers.append(Layer("neck", self.draw_neck))
+        self.layers.append(Layer("head", self.draw_head))
+        self.layers.append(Layer("arm1", self.draw_arm1))  
+        self.layers.append(Layer("arm2", self.draw_arm2))  
+        self.layers.append(Layer("arm3", self.draw_arm3))  
+        self.layers.append(Layer("arm4", self.draw_arm4)) 
+        self.layers.append(Layer("arm5", self.draw_arm5))  
+        self.layers.append(Layer("arm6", self.draw_arm6))  
+
+    
+    def draw_arm1(self, surface):
+        draw_rotated_rect(surface, self.skin_color, (self.x - 70, self.y + 50, 20, 60), -30)
+        draw_rotated_rect(surface, self.color, (self.x - 70, self.y + 50, 20, 60), -30, 2)
+        draw_rotated_rect(surface, self.skin_color, (self.x - 110, self.y + 80, 20, 60), -60)
+        draw_rotated_rect(surface, self.color, (self.x - 110, self.y + 80, 20, 60), -60, 2)
+        pygame.draw.circle(surface, self.skin_color, (self.x - 130, self.y + 130), 12)
+        pygame.draw.circle(surface, self.color, (self.x - 130, self.y + 130), 12, 2)
+    
+    def draw_arm2(self, surface):
+        draw_rotated_rect(surface, self.skin_color, (self.x - 60, self.y + 70, 20, 60), 0)
+        draw_rotated_rect(surface, self.color, (self.x - 60, self.y + 70, 20, 60), 0, 2)
+        draw_rotated_rect(surface, self.skin_color, (self.x - 60, self.y + 130, 20, 60), 0)
+        draw_rotated_rect(surface, self.color, (self.x - 60, self.y + 130, 20, 60), 0, 2)
+        pygame.draw.circle(surface, self.skin_color, (self.x - 50, self.y + 195), 12)
+        pygame.draw.circle(surface, self.color, (self.x - 50, self.y + 195), 12, 2)
+    
+    def draw_arm3(self, surface):
+        draw_rotated_rect(surface, self.skin_color, (self.x - 50, self.y + 90, 20, 60), 30)
+        draw_rotated_rect(surface, self.color, (self.x - 50, self.y + 90, 20, 60), 30, 2)
+        draw_rotated_rect(surface, self.skin_color, (self.x - 20, self.y + 140, 20, 60), 60)
+        draw_rotated_rect(surface, self.color, (self.x - 20, self.y + 140, 20, 60), 60, 2)
+        pygame.draw.circle(surface, self.skin_color, (self.x + 10, self.y + 190), 12)
+        pygame.draw.circle(surface, self.color, (self.x + 10, self.y + 190), 12, 2)
+    
+    def draw_arm4(self, surface):
+        draw_rotated_rect(surface, self.skin_color, (self.x + 50, self.y + 50, 20, 60), 30)
+        draw_rotated_rect(surface, self.color, (self.x + 50, self.y + 50, 20, 60), 30, 2)
+        draw_rotated_rect(surface, self.skin_color, (self.x + 90, self.y + 80, 20, 60), 60)
+        draw_rotated_rect(surface, self.color, (self.x + 90, self.y + 80, 20, 60), 60, 2)
+        pygame.draw.circle(surface, self.skin_color, (self.x + 130, self.y + 130), 12)
+        pygame.draw.circle(surface, self.color, (self.x + 130, self.y + 130), 12, 2)
+    
+    def draw_arm5(self, surface):
+        draw_rotated_rect(surface, self.skin_color, (self.x + 40, self.y + 70, 20, 60), 0)
+        draw_rotated_rect(surface, self.color, (self.x + 40, self.y + 70, 20, 60), 0, 2)
+        draw_rotated_rect(surface, self.skin_color, (self.x + 40, self.y + 130, 20, 60), 0)
+        draw_rotated_rect(surface, self.color, (self.x + 40, self.y + 130, 20, 60), 0, 2)
+        pygame.draw.circle(surface, self.skin_color, (self.x + 50, self.y + 195), 12)
+        pygame.draw.circle(surface, self.color, (self.x + 50, self.y + 195), 12, 2)
+    
+    def draw_arm6(self, surface):
+        draw_rotated_rect(surface, self.skin_color, (self.x + 30, self.y + 90, 20, 60), -30)
+        draw_rotated_rect(surface, self.color, (self.x + 30, self.y + 90, 20, 60), -30, 2)
+        draw_rotated_rect(surface, self.skin_color, (self.x, self.y + 140, 20, 60), -60)
+        draw_rotated_rect(surface, self.color, (self.x, self.y + 140, 20, 60), -60, 2)
+        pygame.draw.circle(surface, self.skin_color, (self.x - 10, self.y + 190), 12)
+        pygame.draw.circle(surface, self.color, (self.x - 10, self.y + 190), 12, 2)
