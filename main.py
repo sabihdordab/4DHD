@@ -223,6 +223,11 @@ def draw_character_preview(surface, body_factory, selections, x_offset=0, y_offs
                                                 x_offset, y_offset)
         draw_polygons_with_color(surface, adjusted_shoes, selections['shoes']['color'])
 
+    if selections.get('wings'):
+        adjusted_wings = adjust_style_coordinates(selections['wings']['original_model'], 
+                                                x_offset, y_offset)
+        draw_polygons_with_color(surface, adjusted_wings, selections['wings']['color'])
+
 
 def select_background_color(body_factory, selections):
     selected_color = BACKGROUND_PALETTE[0]  
@@ -361,6 +366,10 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
             adjusted_shoes = adjust_style_coordinates(current_selections['shoes']['original_model'])
             draw_polygons_with_color(screen, adjusted_shoes, current_selections['shoes']['color'])
 
+        if current_selections.get('wings'):
+            adjusted_wings = adjust_style_coordinates(current_selections['wings']['original_model'])
+            draw_polygons_with_color(screen, adjusted_wings, current_selections['wings']['color'])
+
         if current_selections.get('eye'):
             adjusted_eye = adjust_style_coordinates(current_selections['eye']['original_model'])
             draw_polygons_with_color(screen, adjusted_eye, current_selections['eye']['color'])
@@ -456,14 +465,17 @@ def show_final_character(BodyFactory, selections, background_color):
         if selections.get('shoes'):
             draw_polygons_with_color(surface, selections['shoes']['original_model'], 
                                    selections['shoes']['color'])
-            
+        if selections.get('wings'):
+            draw_polygons_with_color(surface, selections['wings']['original_model'],
+                                   selections['wings']['color'])
         if selections.get('eye'):
             draw_polygons_with_color(surface, selections['eye']['original_model'], 
                                    selections['eye']['color'])
             
-
-
-
+        if selections.get('wings'):
+            draw_polygons_with_color(surface, selections['wings']['original_model'],
+                                   selections['wings']['color'])
+            
         win.blit(surface, (0, 0))
         pygame.display.update()
         clock.tick(30)
@@ -521,6 +533,12 @@ def main():
                 selected_shoes = select_model_with_preview(body_factory, gender, shoes_models, "Shoes", selections)
                 if selected_shoes:
                     selections['shoes'] = selected_shoes
+
+            wings_models = load_models(gender, "wings")
+            if wings_models:
+                selected_wings = select_model_with_preview(body_factory, gender, wings_models, "Wings", selections)
+                if selected_wings:
+                    selections['wings'] = selected_wings
 
             eye_models = load_models(gender, "eye")
             if eye_models:
