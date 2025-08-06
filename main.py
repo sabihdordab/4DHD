@@ -202,6 +202,11 @@ def draw_character_preview(surface, body_factory, selections, x_offset=0, y_offs
         adjusted_eye = adjust_style_coordinates(selections['eye']['original_model'], 
                                               x_offset, y_offset)
         draw_polygons_with_color(surface, adjusted_eye, selections['eye']['color'])
+
+    if selections.get('tail'):
+        adjusted_tail = adjust_style_coordinates(selections['tail']['original_model'], 
+                                                x_offset, y_offset)
+        draw_polygons_with_color(surface, adjusted_tail, selections['tail']['color'])
     
     if selections.get('pants'):
         adjusted_pants = adjust_style_coordinates(selections['pants']['original_model'], 
@@ -217,6 +222,7 @@ def draw_character_preview(surface, body_factory, selections, x_offset=0, y_offs
         adjusted_shoes = adjust_style_coordinates(selections['shoes']['original_model'], 
                                                 x_offset, y_offset)
         draw_polygons_with_color(surface, adjusted_shoes, selections['shoes']['color'])
+
 
 def select_background_color(body_factory, selections):
     selected_color = BACKGROUND_PALETTE[0]  
@@ -339,13 +345,13 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
             adjusted_hair = adjust_style_coordinates(current_selections['hair']['original_model'])
             draw_polygons_with_color(screen, adjusted_hair, current_selections['hair']['color'])
 
+        if current_selections.get('tail'):
+            adjusted_tail = adjust_style_coordinates(current_selections['tail']['original_model'])
+            draw_polygons_with_color(screen, adjusted_tail, current_selections['tail']['color'])
+
         if current_selections.get('pants'):
             adjusted_pants = adjust_style_coordinates(current_selections['pants']['original_model'])
             draw_polygons_with_color(screen, adjusted_pants, current_selections['pants']['color'])
-
-        if current_selections.get('eye'):
-            adjusted_eye = adjust_style_coordinates(current_selections['eye']['original_model'])
-            draw_polygons_with_color(screen, adjusted_eye, current_selections['eye']['color'])
 
         if current_selections.get('sucks'):
             adjusted_sucks = adjust_style_coordinates(current_selections['sucks']['original_model'])
@@ -354,7 +360,11 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
         if current_selections.get('shoes'):
             adjusted_shoes = adjust_style_coordinates(current_selections['shoes']['original_model'])
             draw_polygons_with_color(screen, adjusted_shoes, current_selections['shoes']['color'])
-        
+
+        if current_selections.get('eye'):
+            adjusted_eye = adjust_style_coordinates(current_selections['eye']['original_model'])
+            draw_polygons_with_color(screen, adjusted_eye, current_selections['eye']['color'])
+
         if current_index < len(models):
             adjusted_current = adjust_style_coordinates(models[current_index])
             draw_polygons_with_color(screen, adjusted_current, selected_color)
@@ -431,9 +441,10 @@ def show_final_character(BodyFactory, selections, background_color):
         if selections.get('hair'):
             draw_polygons_with_color(surface, selections['hair']['original_model'], 
                                    selections['hair']['color'])
-        if selections.get('eye'):
-            draw_polygons_with_color(surface, selections['eye']['original_model'], 
-                                   selections['eye']['color'])
+            
+        if selections.get('tail'):
+            draw_polygons_with_color(surface, selections['tail']['original_model'], 
+                                   selections['tail']['color'])
         if selections.get('pants'):
             draw_polygons_with_color(surface, selections['pants']['original_model'], 
                                    selections['pants']['color'])
@@ -445,6 +456,12 @@ def show_final_character(BodyFactory, selections, background_color):
         if selections.get('shoes'):
             draw_polygons_with_color(surface, selections['shoes']['original_model'], 
                                    selections['shoes']['color'])
+            
+        if selections.get('eye'):
+            draw_polygons_with_color(surface, selections['eye']['original_model'], 
+                                   selections['eye']['color'])
+            
+
 
 
         win.blit(surface, (0, 0))
@@ -480,18 +497,18 @@ def main():
                 selected_hair = select_model_with_preview(body_factory, gender, hair_models, "Hair", selections)
                 if selected_hair:
                     selections['hair'] = selected_hair
+            
+            tail_models = load_models(gender, "tail")
+            if tail_models:
+                selected_tail = select_model_with_preview(body_factory, gender, tail_models, "Tail", selections)
+                if selected_tail:
+                    selections['tail'] = selected_tail
 
             pants_models = load_models(gender, "pants")
             if pants_models:
                 selected_pants = select_model_with_preview(body_factory, gender, pants_models, "Pants", selections)
                 if selected_pants:
                     selections['pants'] = selected_pants
-
-            eye_models = load_models(gender, "eye")
-            if eye_models:
-                selected_eye = select_model_with_preview(body_factory, gender, eye_models, "Eye", selections)
-                if selected_eye:
-                    selections['eye'] = selected_eye
 
             sucks_models = load_models(gender, "sucks")
             if sucks_models:
@@ -504,6 +521,12 @@ def main():
                 selected_shoes = select_model_with_preview(body_factory, gender, shoes_models, "Shoes", selections)
                 if selected_shoes:
                     selections['shoes'] = selected_shoes
+
+            eye_models = load_models(gender, "eye")
+            if eye_models:
+                selected_eye = select_model_with_preview(body_factory, gender, eye_models, "Eye", selections)
+                if selected_eye:
+                    selections['eye'] = selected_eye
 
             background_color = select_background_color(body_factory, selections)
             
