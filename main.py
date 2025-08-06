@@ -228,6 +228,11 @@ def draw_character_preview(surface, body_factory, selections, x_offset=0, y_offs
                                                 x_offset, y_offset)
         draw_polygons_with_color(surface, adjusted_wings, selections['wings']['color'])
 
+    if selections.get('horns'):
+        adjusted_horns = adjust_style_coordinates(selections['horns']['original_model'], 
+                                                x_offset, y_offset)
+        draw_polygons_with_color(surface, adjusted_horns, selections['horns']['color'])
+
     if selections.get('gun'):
         adjusted_gun = adjust_style_coordinates(selections['gun']['original_model'], 
                                                 x_offset, y_offset)
@@ -379,6 +384,10 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
             adjusted_eye = adjust_style_coordinates(current_selections['eye']['original_model'])
             draw_polygons_with_color(screen, adjusted_eye, current_selections['eye']['color'])
 
+        if current_selections.get('horns'):
+            adjusted_horns = adjust_style_coordinates(current_selections['horns']['original_model'])
+            draw_polygons_with_color(screen, adjusted_horns, current_selections['horns']['color'])
+
         if current_selections.get('gun'):
             adjusted_gun = adjust_style_coordinates(current_selections['gun']['original_model'])
             draw_polygons_with_color(screen, adjusted_gun, current_selections['gun']['color'])
@@ -488,6 +497,10 @@ def show_final_character(BodyFactory, selections, background_color):
         if selections.get('gun'):
             draw_polygons_with_color(surface, selections['gun']['original_model'],
                                    selections['gun']['color'])
+        
+        if selections.get('horn'):
+            draw_polygons_with_color(surface, selections['horn']['original_model'],
+                                   selections['horn']['color'])
             
         win.blit(surface, (0, 0))
         pygame.display.update()
@@ -558,6 +571,12 @@ def main():
                 selected_eye = select_model_with_preview(body_factory, gender, eye_models, "Eye", selections)
                 if selected_eye:
                     selections['eye'] = selected_eye
+            
+            horn_models = load_models(gender, "horn")
+            if horn_models:
+                selected_horn = select_model_with_preview(body_factory, gender, horn_models, "Horn", selections)
+                if selected_horn:
+                    selections['horn'] = selected_horn
 
             gun_models = load_models(gender, "gun")
             if gun_models:
