@@ -228,6 +228,11 @@ def draw_character_preview(surface, body_factory, selections, x_offset=0, y_offs
                                                 x_offset, y_offset)
         draw_polygons_with_color(surface, adjusted_wings, selections['wings']['color'])
 
+    if selections.get('gun'):
+        adjusted_gun = adjust_style_coordinates(selections['gun']['original_model'], 
+                                                x_offset, y_offset)
+        draw_polygons_with_color(surface, adjusted_gun, selections['gun']['color'])
+
 
 def select_background_color(body_factory, selections):
     selected_color = BACKGROUND_PALETTE[0]  
@@ -374,6 +379,10 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
             adjusted_eye = adjust_style_coordinates(current_selections['eye']['original_model'])
             draw_polygons_with_color(screen, adjusted_eye, current_selections['eye']['color'])
 
+        if current_selections.get('gun'):
+            adjusted_gun = adjust_style_coordinates(current_selections['gun']['original_model'])
+            draw_polygons_with_color(screen, adjusted_gun, current_selections['gun']['color'])
+
         if current_index < len(models):
             adjusted_current = adjust_style_coordinates(models[current_index])
             draw_polygons_with_color(screen, adjusted_current, selected_color)
@@ -476,6 +485,10 @@ def show_final_character(BodyFactory, selections, background_color):
             draw_polygons_with_color(surface, selections['wings']['original_model'],
                                    selections['wings']['color'])
             
+        if selections.get('gun'):
+            draw_polygons_with_color(surface, selections['gun']['original_model'],
+                                   selections['gun']['color'])
+            
         win.blit(surface, (0, 0))
         pygame.display.update()
         clock.tick(30)
@@ -545,6 +558,12 @@ def main():
                 selected_eye = select_model_with_preview(body_factory, gender, eye_models, "Eye", selections)
                 if selected_eye:
                     selections['eye'] = selected_eye
+
+            gun_models = load_models(gender, "gun")
+            if gun_models:
+                selected_gun = select_model_with_preview(body_factory, gender, gun_models, "Gun", selections)
+                if selected_gun:
+                    selections['gun'] = selected_gun
 
             background_color = select_background_color(body_factory, selections)
             
