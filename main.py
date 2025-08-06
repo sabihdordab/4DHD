@@ -5,6 +5,7 @@ import ast
 from model.character import FemaleBody, MaleBody , MonsterBody
 
 pygame.init()
+pygame.mixer.init()
 
 WIDTH, HEIGHT = 800, 600
 WHITE = (255, 255, 255)
@@ -22,6 +23,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Choose Character")
 
 font = pygame.font.Font("assets/game.ttf", 15)
+music = pygame.mixer.Sound("assets/30 Singularity.mp3")
 
 COLOR_PALETTE = [
     (0, 0, 0),
@@ -431,6 +433,7 @@ class ResetException(Exception):
 
 def main():
     while True: 
+        music.play()
         try:
             base_class, gender = select_base_body()
             skin_color = select_skin_color()  
