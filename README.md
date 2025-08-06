@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Pygame](https://img.shields.io/badge/Pygame-00599C?style=for-the-badge&logo=python&logoColor=white)
 
-![demo](/assets/demo.gif)
+![demo](/assets/demo.png)
 </div>
 
 ---
@@ -16,12 +16,13 @@
 - **Skin Tones**
 - **Clothing**
 - **Hairstyles**
+- **Guns**
+- **Wings**
 - **Eye Styles**
 - **Color Palette**
-
+- ...
+  
 ---
-
-
 
 ### Prerequisites
 ```bash
@@ -36,6 +37,7 @@ cd 4DHD
 ```
 
 2. Run the game
+
 ```bash
 python main.py
 ```
@@ -52,12 +54,15 @@ python main.py
 │       │   ├── shirt.txt
 │       │   ├── hair.txt
 │       │   ├── eye.txt
+|       |   ├── eye.txt
+|       |   ├── etc...
 │       │   └── pants.txt
 │       └── male/           
 │           ├── shirt.txt
 │           ├── hair.txt
 │           ├── eye.txt
 │           └── pants.txt
+|           ...
 └── README.md
 ```
 

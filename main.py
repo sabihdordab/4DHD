@@ -2,6 +2,7 @@ import pygame
 import sys
 import os
 import ast
+import time
 from model.character import FemaleBody, MaleBody , MonsterBody
 
 pygame.init()
@@ -454,7 +455,7 @@ def show_final_character(BodyFactory, selections, background_color):
     win = pygame.display.set_mode((500, 500))
     surface = pygame.Surface((500, 500))
     pygame.display.set_caption("Your Final Character")
-
+    
     character = BodyFactory(surface)
     clock = pygame.time.Clock()
 
@@ -464,51 +465,57 @@ def show_final_character(BodyFactory, selections, background_color):
 
         if selections.get('shirt'):
             draw_polygons_with_color(surface, selections['shirt']['original_model'], 
-                                   selections['shirt']['color'])
+                                     selections['shirt']['color'])
         if selections.get('hair'):
             draw_polygons_with_color(surface, selections['hair']['original_model'], 
-                                   selections['hair']['color'])
-            
+                                     selections['hair']['color'])
         if selections.get('tail'):
             draw_polygons_with_color(surface, selections['tail']['original_model'], 
-                                   selections['tail']['color'])
+                                     selections['tail']['color'])
         if selections.get('pants'):
             draw_polygons_with_color(surface, selections['pants']['original_model'], 
-                                   selections['pants']['color'])
-            
+                                     selections['pants']['color'])
         if selections.get('sucks'):
             draw_polygons_with_color(surface, selections['sucks']['original_model'], 
-                                   selections['sucks']['color'])
-            
+                                     selections['sucks']['color'])
         if selections.get('shoes'):
             draw_polygons_with_color(surface, selections['shoes']['original_model'], 
-                                   selections['shoes']['color'])
+                                     selections['shoes']['color'])
         if selections.get('wings'):
             draw_polygons_with_color(surface, selections['wings']['original_model'],
-                                   selections['wings']['color'])
+                                     selections['wings']['color'])
         if selections.get('eye'):
             draw_polygons_with_color(surface, selections['eye']['original_model'], 
-                                   selections['eye']['color'])
-            
-        if selections.get('wings'):
-            draw_polygons_with_color(surface, selections['wings']['original_model'],
-                                   selections['wings']['color'])
-            
+                                     selections['eye']['color'])
         if selections.get('gun'):
             draw_polygons_with_color(surface, selections['gun']['original_model'],
-                                   selections['gun']['color'])
-        
+                                     selections['gun']['color'])
         if selections.get('horn'):
             draw_polygons_with_color(surface, selections['horn']['original_model'],
-                                   selections['horn']['color'])
-            
+                                     selections['horn']['color'])
+
         win.blit(surface, (0, 0))
+        
+        save_button = draw_button("Save", 200, 450, BUTTON_WIDTH, BUTTON_HEIGHT, color=(0, 255, 0))
+        reset_button = draw_button("Reset", 350, 450, BUTTON_WIDTH, BUTTON_HEIGHT, color=(255, 0, 0))
+
         pygame.display.update()
         clock.tick(30)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit(); sys.exit()
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = pygame.mouse.get_pos()
+                
+                if save_button.collidepoint(mx, my):
+                    pygame.image.save(surface, f"screen/final_character{ time.time()}.png")
+                    print("Character saved as 'final_character.png'")
+                
+                elif reset_button.collidepoint(mx, my):
+                    raise ResetException
+
 
 class ResetException(Exception):
     pass
