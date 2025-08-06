@@ -208,6 +208,16 @@ def draw_character_preview(surface, body_factory, selections, x_offset=0, y_offs
                                                 x_offset, y_offset)
         draw_polygons_with_color(surface, adjusted_pants, selections['pants']['color'])
 
+    if selections.get('sucks'):
+        adjusted_sucks = adjust_style_coordinates(selections['sucks']['original_model'], 
+                                                x_offset, y_offset)
+        draw_polygons_with_color(surface, adjusted_sucks, selections['sucks']['color'])
+
+    if selections.get('shoes'):
+        adjusted_shoes = adjust_style_coordinates(selections['shoes']['original_model'], 
+                                                x_offset, y_offset)
+        draw_polygons_with_color(surface, adjusted_shoes, selections['shoes']['color'])
+
 def select_background_color(body_factory, selections):
     selected_color = BACKGROUND_PALETTE[0]  
     running = True
@@ -334,8 +344,16 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
             draw_polygons_with_color(screen, adjusted_pants, current_selections['pants']['color'])
 
         if current_selections.get('eye'):
-            adjusted_hair = adjust_style_coordinates(current_selections['eye']['original_model'])
-            draw_polygons_with_color(screen, adjusted_hair, current_selections['eye']['color'])
+            adjusted_eye = adjust_style_coordinates(current_selections['eye']['original_model'])
+            draw_polygons_with_color(screen, adjusted_eye, current_selections['eye']['color'])
+
+        if current_selections.get('sucks'):
+            adjusted_sucks = adjust_style_coordinates(current_selections['sucks']['original_model'])
+            draw_polygons_with_color(screen, adjusted_sucks, current_selections['sucks']['color'])
+
+        if current_selections.get('shoes'):
+            adjusted_shoes = adjust_style_coordinates(current_selections['shoes']['original_model'])
+            draw_polygons_with_color(screen, adjusted_shoes, current_selections['shoes']['color'])
         
         if current_index < len(models):
             adjusted_current = adjust_style_coordinates(models[current_index])
@@ -419,6 +437,15 @@ def show_final_character(BodyFactory, selections, background_color):
         if selections.get('pants'):
             draw_polygons_with_color(surface, selections['pants']['original_model'], 
                                    selections['pants']['color'])
+            
+        if selections.get('sucks'):
+            draw_polygons_with_color(surface, selections['sucks']['original_model'], 
+                                   selections['sucks']['color'])
+            
+        if selections.get('shoes'):
+            draw_polygons_with_color(surface, selections['shoes']['original_model'], 
+                                   selections['shoes']['color'])
+
 
         win.blit(surface, (0, 0))
         pygame.display.update()
@@ -465,6 +492,18 @@ def main():
                 selected_eye = select_model_with_preview(body_factory, gender, eye_models, "Eye", selections)
                 if selected_eye:
                     selections['eye'] = selected_eye
+
+            sucks_models = load_models(gender, "sucks")
+            if sucks_models:
+                selected_sucks = select_model_with_preview(body_factory, gender, sucks_models, "Sucks", selections)
+                if selected_sucks:
+                    selections['sucks'] = selected_sucks
+
+            shoes_models = load_models(gender, "shoes")
+            if shoes_models:
+                selected_shoes = select_model_with_preview(body_factory, gender, shoes_models, "Shoes", selections)
+                if selected_shoes:
+                    selections['shoes'] = selected_shoes
 
             background_color = select_background_color(body_factory, selections)
             
