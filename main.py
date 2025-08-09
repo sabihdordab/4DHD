@@ -454,6 +454,7 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
                 
                 elif skip_btn and skip_btn.collidepoint(mx, my):
                     raise ResetException
+                
 def show_final_character(BodyFactory, selections, background_color, gender, skin_color):
     win = pygame.display.set_mode((500, 500))
     surface = pygame.Surface((500, 500))
@@ -473,9 +474,11 @@ def show_final_character(BodyFactory, selections, background_color, gender, skin
 
         win.blit(surface, (0, 0))
         
-        save_img_button = draw_button("Save Image", 50, 450, 120, BUTTON_HEIGHT, color=(0, 255, 0))
-        save_db_button = draw_button("Save to DB", 180, 450, 120, BUTTON_HEIGHT, color=(0, 0, 255))
-        reset_button = draw_button("Reset", 310, 450, BUTTON_WIDTH, BUTTON_HEIGHT, color=(255, 0, 0))
+        save_img_button = draw_button("Save Image", 20, 400, 90, 35, color=(0, 255, 0))
+        save_transparent_button = draw_button("Save PNG", 120, 400, 90, 35, color=(255, 165, 0))
+        save_db_button = draw_button("Save to DB", 220, 400, 90, 35, color=(0, 0, 255))
+        reset_button = draw_button("Reset", 320, 400, 90, 35, color=(255, 0, 0))
+
 
         pygame.display.update()
         clock.tick(30)
@@ -489,7 +492,11 @@ def show_final_character(BodyFactory, selections, background_color, gender, skin
                 
                 if save_img_button.collidepoint(mx, my):
                     pygame.image.save(surface, f"screen/final_character_{time.time()}.png")
-                    print("Character image saved!")
+                    print("Character image saved with background!")
+                
+                elif save_transparent_button.collidepoint(mx, my):
+                    filename = save_character_with_transparent_bg(BodyFactory, selections, skin_color)
+                    print(f"Character saved with transparent background: {filename}")
                 
                 elif save_db_button.collidepoint(mx, my):
                     user_id = 1
@@ -498,12 +505,26 @@ def show_final_character(BodyFactory, selections, background_color, gender, skin
                 
                 elif reset_button.collidepoint(mx, my):
                     raise ResetException
-
-
-
+                
 class ResetException(Exception):
     pass
 
+def save_character_with_transparent_bg(BodyFactory, selections, skin_color):
+    transparent_surface = pygame.Surface((500, 500), pygame.SRCALPHA)
+    
+    transparent_surface.fill((0, 0, 0, 0))
+    
+    character = BodyFactory(transparent_surface)
+    character.draw()
+    
+    for part in ['shirt', 'hair', 'tail', 'pants', 'sucks', 'shoes', 'wings', 'eye', 'horn', 'gun']:
+        if selections.get(part):
+            draw_polygons_with_color(transparent_surface, selections[part]['original_model'], 
+                                     selections[part]['color'])
+    
+    filename = f"screen/character_transparent_{time.time()}.png"
+    pygame.image.save(transparent_surface, filename)
+    return filename
 
 DB_PATH = os.path.join('model', 'database', 'game.db')
 
