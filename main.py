@@ -3,7 +3,10 @@ import sys
 import os
 import ast
 import time
-from model.character import FemaleBody, MaleBody , MonsterBody
+from model.character import *
+import sqlite3
+import os
+from model.database import db_setup
 
 pygame.init()
 pygame.mixer.init()
@@ -451,7 +454,7 @@ def select_model_with_preview(BodyFactory, gender, models, title, current_select
                 
                 elif skip_btn and skip_btn.collidepoint(mx, my):
                     raise ResetException
-def show_final_character(BodyFactory, selections, background_color):
+def show_final_character(BodyFactory, selections, background_color, gender, skin_color):
     win = pygame.display.set_mode((500, 500))
     surface = pygame.Surface((500, 500))
     pygame.display.set_caption("Your Final Character")
@@ -463,44 +466,16 @@ def show_final_character(BodyFactory, selections, background_color):
         surface.fill(background_color)
         character.draw()
 
-        if selections.get('shirt'):
-            draw_polygons_with_color(surface, selections['shirt']['original_model'], 
-                                     selections['shirt']['color'])
-        if selections.get('hair'):
-            draw_polygons_with_color(surface, selections['hair']['original_model'], 
-                                     selections['hair']['color'])
-        if selections.get('tail'):
-            draw_polygons_with_color(surface, selections['tail']['original_model'], 
-                                     selections['tail']['color'])
-        if selections.get('pants'):
-            draw_polygons_with_color(surface, selections['pants']['original_model'], 
-                                     selections['pants']['color'])
-        if selections.get('sucks'):
-            draw_polygons_with_color(surface, selections['sucks']['original_model'], 
-                                     selections['sucks']['color'])
-        if selections.get('shoes'):
-            draw_polygons_with_color(surface, selections['shoes']['original_model'], 
-                                     selections['shoes']['color'])
-        if selections.get('wings'):
-            draw_polygons_with_color(surface, selections['wings']['original_model'],
-                                     selections['wings']['color'])
-        if selections.get('eye'):
-            draw_polygons_with_color(surface, selections['eye']['original_model'], 
-                                     selections['eye']['color'])
-            
-        if selections.get('horn'):
-            draw_polygons_with_color(surface, selections['horn']['original_model'],
-                                     selections['horn']['color'])
-            
-        if selections.get('gun'):
-            draw_polygons_with_color(surface, selections['gun']['original_model'],
-                                     selections['gun']['color'])
-
+        for part in ['shirt', 'hair', 'tail', 'pants', 'sucks', 'shoes', 'wings', 'eye', 'horn', 'gun']:
+            if selections.get(part):
+                draw_polygons_with_color(surface, selections[part]['original_model'], 
+                                         selections[part]['color'])
 
         win.blit(surface, (0, 0))
         
-        save_button = draw_button("Save", 200, 450, BUTTON_WIDTH, BUTTON_HEIGHT, color=(0, 255, 0))
-        reset_button = draw_button("Reset", 350, 450, BUTTON_WIDTH, BUTTON_HEIGHT, color=(255, 0, 0))
+        save_img_button = draw_button("Save Image", 50, 450, 120, BUTTON_HEIGHT, color=(0, 255, 0))
+        save_db_button = draw_button("Save to DB", 180, 450, 120, BUTTON_HEIGHT, color=(0, 0, 255))
+        reset_button = draw_button("Reset", 310, 450, BUTTON_WIDTH, BUTTON_HEIGHT, color=(255, 0, 0))
 
         pygame.display.update()
         clock.tick(30)
@@ -512,21 +487,275 @@ def show_final_character(BodyFactory, selections, background_color):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mx, my = pygame.mouse.get_pos()
                 
-                if save_button.collidepoint(mx, my):
-                    pygame.image.save(surface, f"screen/final_character{ time.time()}.png")
-                    print("Character saved as 'final_character.png'")
+                if save_img_button.collidepoint(mx, my):
+                    pygame.image.save(surface, f"screen/final_character_{time.time()}.png")
+                    print("Character image saved!")
+                
+                elif save_db_button.collidepoint(mx, my):
+                    user_id = 1
+                    char_id = save_character_to_db(user_id, gender, skin_color, selections, background_color)
+                    print(f"Character saved to database with ID: {char_id}")
                 
                 elif reset_button.collidepoint(mx, my):
                     raise ResetException
 
 
+
 class ResetException(Exception):
     pass
 
+
+DB_PATH = os.path.join('model', 'database', 'game.db')
+
+def save_character_to_db(user_id, gender, skin_color, selections, background_color):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    def extract_data(selection_key):
+        if selections.get(selection_key):
+            return (
+                str(selections[selection_key]['original_model']),
+                str(selections[selection_key]['color'])
+            )
+        return None, None
+    
+    shirt_model, shirt_color = extract_data('shirt')
+    hair_model, hair_color = extract_data('hair')
+    tail_model, tail_color = extract_data('tail')
+    pants_model, pants_color = extract_data('pants')
+    sucks_model, sucks_color = extract_data('sucks')
+    shoes_model, shoes_color = extract_data('shoes')
+    wings_model, wings_color = extract_data('wings')
+    eye_model, eye_color = extract_data('eye')
+    horn_model, horn_color = extract_data('horn')
+    gun_model, gun_color = extract_data('gun')
+    
+    cursor.execute("""
+        INSERT INTO Characters (
+            user_id, gender, skin_color, shirt_model, shirt_color,
+            hair_model, hair_color, tail_model, tail_color,
+            pants_model, pants_color, sucks_model, sucks_color,
+            shoes_model, shoes_color, wings_model, wings_color,
+            eye_model, eye_color, horn_model, horn_color,
+            gun_model, gun_color
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        user_id, gender, str(skin_color),
+        shirt_model, shirt_color, hair_model, hair_color,
+        tail_model, tail_color, pants_model, pants_color,
+        sucks_model, sucks_color, shoes_model, shoes_color,
+        wings_model, wings_color, eye_model, eye_color,
+        horn_model, horn_color, gun_model, gun_color
+    ))
+    
+    conn.commit()
+    character_id = cursor.lastrowid
+    conn.close()
+    
+    return character_id
+
+def load_characters_from_db(user_id=None):
+
+    if not os.path.exists(DB_PATH):
+        return []
+    
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    if user_id:
+        cursor.execute("SELECT * FROM Characters WHERE user_id = ?", (user_id,))
+    else:
+        cursor.execute("SELECT * FROM Characters")
+    
+    characters = cursor.fetchall()
+    conn.close()
+    
+    return characters
+
+def parse_character_data(character_row):
+    try:
+        selections = {}
+        
+        skin_color = ast.literal_eval(character_row[3]) if character_row[3] else (255, 220, 177)
+        
+        components = [
+            ('shirt', character_row[4], character_row[5]),
+            ('hair', character_row[6], character_row[7]),
+            ('tail', character_row[8], character_row[9]),
+            ('pants', character_row[10], character_row[11]),
+            ('sucks', character_row[12], character_row[13]),
+            ('shoes', character_row[14], character_row[15]),
+            ('wings', character_row[16], character_row[17]),
+            ('eye', character_row[18], character_row[19]),
+            ('horn', character_row[20], character_row[21]),
+            ('gun', character_row[22], character_row[23])
+        ]
+        
+        for comp_name, model_str, color_str in components:
+            if model_str and color_str:
+                try:
+                    model = ast.literal_eval(model_str)
+                    color = ast.literal_eval(color_str)
+                    selections[comp_name] = {
+                        'original_model': model,
+                        'color': color
+                    }
+                except:
+                    continue
+        
+        return {
+            'id': character_row[0],
+            'user_id': character_row[1],
+            'gender': character_row[2],
+            'skin_color': skin_color,
+            'selections': selections
+        }
+    except Exception as e:
+        print(f"Error parsing character data: {e}")
+        return None
+
+def select_saved_character():
+    
+    characters = load_characters_from_db()
+    
+    if not characters:
+        screen.fill(WHITE)
+        no_char_text = font.render("No saved characters found!", True, BLACK)
+        screen.blit(no_char_text, (WIDTH//2 - 100, HEIGHT//2))
+        back_btn = draw_button("Back", WIDTH//2 - 50, HEIGHT//2 + 50, BUTTON_WIDTH, BUTTON_HEIGHT)
+        pygame.display.update()
+        
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mx, my = pygame.mouse.get_pos()
+                    if back_btn.collidepoint(mx, my):
+                        return None
+        
+    current_index = 0
+    clock = pygame.time.Clock()
+    
+    while True:
+        screen.fill(WHITE)
+        
+        if current_index < len(characters):
+            char_data = parse_character_data(characters[current_index])
+            if char_data:
+                gender = char_data['gender']
+                if gender == "female":
+                    body_class = FemaleBody
+                elif gender == "male":
+                    body_class = MaleBody
+                else:
+                    body_class = MonsterBody
+                
+                def body_factory(surface):
+                    return body_class(surface, skin_color=char_data['skin_color'])
+                
+                character_surface = pygame.Surface((CHARACTER_DISPLAY_WIDTH, CHARACTER_DISPLAY_HEIGHT), pygame.SRCALPHA)
+                draw_character_preview(character_surface, body_factory, char_data['selections'])
+                screen.blit(character_surface, (50, 50))
+                
+                info_text = font.render(f"Character {current_index + 1} of {len(characters)}", True, BLACK)
+                screen.blit(info_text, (500, 50))
+                
+                gender_text = font.render(f"Gender: {gender.capitalize()}", True, BLACK)
+                screen.blit(gender_text, (500, 80))
+                
+                id_text = font.render(f"ID: {char_data['id']}", True, BLACK)
+                screen.blit(id_text, (500, 110))
+        
+        prev_btn = None
+        next_btn = None
+        
+        if current_index > 0:
+            prev_btn = draw_button("<- Prev", 450, HEIGHT - 120, BUTTON_WIDTH, BUTTON_HEIGHT)
+        if current_index < len(characters) - 1:
+            next_btn = draw_button("Next ->", 570, HEIGHT - 120, BUTTON_WIDTH, BUTTON_HEIGHT)
+        
+        load_btn = draw_button("Load", 450, HEIGHT - 70, BUTTON_WIDTH, BUTTON_HEIGHT, color=(0, 255, 0))
+        back_btn = draw_button("Back", 570, HEIGHT - 70, BUTTON_WIDTH, BUTTON_HEIGHT, color=(255, 0, 0))
+        
+        pygame.display.update()
+        clock.tick(30)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = pygame.mouse.get_pos()
+                
+                if prev_btn and prev_btn.collidepoint(mx, my):
+                    if current_index > 0:
+                        current_index -= 1
+                
+                elif next_btn and next_btn.collidepoint(mx, my):
+                    if current_index < len(characters) - 1:
+                        current_index += 1
+                
+                elif load_btn.collidepoint(mx, my):
+                    if current_index < len(characters):
+                        return parse_character_data(characters[current_index])
+                
+                elif back_btn.collidepoint(mx, my):
+                    return None
+
 def main():
+    global screen
     while True: 
         music.play()
         try:
+            screen.fill(WHITE)
+            title_text = font.render("Character Creator", True, BLACK)
+            screen.blit(title_text, (WIDTH//2 - 80, 100))
+            
+            create_btn = draw_button("Create New", WIDTH//2 - 60, 200, 120, BUTTON_HEIGHT, color=(0, 255, 0))
+            load_btn = draw_button("Load Saved", WIDTH//2 - 60, 260, 120, BUTTON_HEIGHT, color=(0, 0, 255))
+            pygame.display.update()
+            
+            choice_made = False
+            load_character = False
+            
+            while not choice_made:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        mx, my = pygame.mouse.get_pos()
+                        
+                        if create_btn.collidepoint(mx, my):
+                            choice_made = True
+                            load_character = False
+                        elif load_btn.collidepoint(mx, my):
+                            choice_made = True
+                            load_character = True
+            
+            if load_character:
+                loaded_char = select_saved_character()
+                if loaded_char:
+                    gender = loaded_char['gender']
+                    if gender == "female":
+                        base_class = FemaleBody
+                    elif gender == "male":
+                        base_class = MaleBody
+                    else:
+                        base_class = MonsterBody
+                    
+                    def body_factory(surface):
+                        return base_class(surface, skin_color=loaded_char['skin_color'])
+                    
+                    background_color = select_background_color(body_factory, loaded_char['selections'])
+                    show_final_character(body_factory, loaded_char['selections'], background_color, 
+                                         gender, loaded_char['skin_color'])
+                    continue
+                else:
+                    continue
+            
             base_class, gender = select_base_body()
             skin_color = select_skin_color()  
             selections = {}
@@ -595,8 +824,8 @@ def main():
                     selections['gun'] = selected_gun
 
             background_color = select_background_color(body_factory, selections)
+            show_final_character(body_factory, selections, background_color, gender, skin_color)
             
-            show_final_character(body_factory, selections, background_color)
             break
             
         except ResetException:
